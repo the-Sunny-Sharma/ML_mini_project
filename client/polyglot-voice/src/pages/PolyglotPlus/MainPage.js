@@ -1,74 +1,45 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Navbar from "../../components/Navbar/Navbar";
 import "./MainPage.css";
 
 export default function MainPage() {
+  const [languages, setLanguages] = useState([]);
+  const [selectedLanguage, setSelectedLanguage] = useState("English"); // Default to English
+
+  // Fetch languages on component mount
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/languages")
+      .then((response) => {
+        setLanguages(response.data.languages);
+        // Optionally, ensure English is among the fetched languages and set it as selected
+        if (response.data.languages.includes("English")) {
+          setSelectedLanguage("English");
+        }
+      })
+      .catch((error) => console.error("There was an error!", error));
+  }, []);
+
   return (
     <>
       <Navbar />
-      <div class="select-box">
-        <div class="select-box__current" tabindex="1">
-          <div class="select-box__value">
-            <input
-              class="select-box__input"
-              type="radio"
-              id="0"
-              value="1"
-              name="Ben"
-              checked="checked"
-            />
-            <p class="select-box__input-text">Cream</p>
-          </div>
-          <div class="select-box__value">
-            <input
-              class="select-box__input"
-              type="radio"
-              id="1"
-              value="2"
-              name="Ben"
-              checked="checked"
-            />
-            <p class="select-box__input-text">Cheese</p>
-          </div>
-          <div class="select-box__value">
-            <input
-              class="select-box__input"
-              type="radio"
-              id="2"
-              value="3"
-              name="Ben"
-              checked="checked"
-            />
-            <p class="select-box__input-text">Milk</p>
-          </div>
-          <div class="select-box__value">
-            <input
-              class="select-box__input"
-              type="radio"
-              id="3"
-              value="4"
-              name="Ben"
-              checked="checked"
-            />
-            <p class="select-box__input-text">Honey</p>
-          </div>
-          <div class="select-box__value">
-            <input
-              class="select-box__input"
-              type="radio"
-              id="4"
-              value="5"
-              name="Ben"
-              checked="checked"
-            />
-            <p class="select-box__input-text">Toast</p>
-          </div>
-          {/* <img
-            class="select-box__icon"
-            src="http://cdn.onlinewebfonts.com/svg/img_295694.svg"
-            alt="Arrow Icon"
-            aria-hidden="true"
-          /> */}
+      <div className="select-box">
+        <div className="select-box__current" tabIndex="1">
+          {languages.map((language, index) => (
+            <div className="select-box__value" key={index}>
+              <input
+                className="select-box__input"
+                type="radio"
+                id={index.toString()}
+                value={language} // Changed to language instead of index
+                name="language"
+                checked={selectedLanguage === language} // Control checked state
+                onChange={() => setSelectedLanguage(language)} // Update state on change
+              />
+              <p className="select-box__input-text">{language}</p>
+            </div>
+          ))}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="#fff"
@@ -78,34 +49,20 @@ export default function MainPage() {
             <path d="M903.232 256L960 306.432 512 768 64 306.432 120.768 256 512 659.072z"></path>
           </svg>
         </div>
-        <ul class="select-box__list">
-          <li>
-            <label class="select-box__option" for="0" aria-hidden="aria-hidden">
-              Cream
-            </label>
-          </li>
-          <li>
-            <label class="select-box__option" for="1" aria-hidden="aria-hidden">
-              Cheese
-            </label>
-          </li>
-          <li>
-            <label class="select-box__option" for="2" aria-hidden="aria-hidden">
-              Milk
-            </label>
-          </li>
-          <li>
-            <label class="select-box__option" for="3" aria-hidden="aria-hidden">
-              Honey
-            </label>
-          </li>
-          <li>
-            <label class="select-box__option" for="4" aria-hidden="aria-hidden">
-              Toast
-            </label>
-          </li>
+        <ul className="select-box__list">
+          {languages.map((language, index) => (
+            <li key={index}>
+              <label
+                className="select-box__option"
+                htmlFor={index.toString()}
+                aria-hidden="true"
+              >
+                {language}
+              </label>
+            </li>
+          ))}
         </ul>
-      </div>{" "}
+      </div>
       <div className="main_pg_wrapper">
         <div className="left-container">
           <textarea

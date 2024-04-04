@@ -96,34 +96,35 @@ def convert_and_upload_audio():
     )
     
     return jsonify({'detected_language': detected_language, 'audio_url': audio_url})
-@app.route('/translate', methods=['POST'])
-def translate_and_get_audio():
-    text = request.json['text']
-    target_language = request.json['target_language']
-    
-    # Detect language
-    detected_language = trained_model.detect_language(text)
-    
-    # Get the language code corresponding to the detected language
-    lang_code_from = language_mapping.get(detected_language)
-    lang_code_to = language_mapping.get(target_language)
 
-    # Check if the languages are supported
-    if lang_code_from is None or lang_code_to is None:
-        return jsonify({'error': 'Language not supported'}), 400
+# @app.route('/translate', methods=['POST'])
+# def translate_and_get_audio():
+#     text = request.json['text']
+#     target_language = request.json['target_language']
     
-    # Attempt translation with error handling
-    try:
-        translations = {}
-        translator = Translator(provider='libre', from_lang=lang_code_from, to_lang=lang_code_to)
-        translation = translator.translate(text)
-        translations[lang_code_to] = translation
+#     # Detect language
+#     detected_language = trained_model.detect_language(text)
+    
+#     # Get the language code corresponding to the detected language
+#     lang_code_from = language_mapping.get(detected_language)
+#     lang_code_to = language_mapping.get(target_language)
+
+#     # Check if the languages are supported
+#     if lang_code_from is None or lang_code_to is None:
+#         return jsonify({'error': 'Language not supported'}), 400
+    
+#     # Attempt translation with error handling
+#     try:
+#         translations = {}
+#         translator = Translator(provider='libre', from_lang=lang_code_from, to_lang=lang_code_to)
+#         translation = translator.translate(text)
+#         translations[lang_code_to] = translation
         
-        return jsonify({'detected_language': detected_language, 'translations': translations})
-    except Exception as e:
-        # Log the error for debugging purposes
-        app.logger.error(f"Translation error: {e}")
-        return jsonify({'error': 'Translation failed'}), 500
+#         return jsonify({'detected_language': detected_language, 'translations': translations})
+#     except Exception as e:
+#         # Log the error for debugging purposes
+#         app.logger.error(f"Translation error: {e}")
+#         return jsonify({'error': 'Translation failed'}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
