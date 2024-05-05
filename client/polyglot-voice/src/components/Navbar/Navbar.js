@@ -18,7 +18,7 @@ export default function Navbar() {
           <>
             <div className="flex-left">
               <Link className="logo" to="/">
-                PolyglotVoice+
+                PolyglotVoice<span className="orange">+</span>
               </Link>
             </div>
             <div className="flex-right">
