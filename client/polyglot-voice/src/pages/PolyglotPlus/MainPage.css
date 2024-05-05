@@ -1,6 +1,7 @@
 .main_pg_wrapper {
   padding: 50px 80px;
   display: flex;
+  align-items: center;
   justify-content: space-evenly;
 }
 
@@ -10,11 +11,15 @@
 }
 
 .select-box {
+  border: 1px solid white;
+  border-radius: 4px;
   position: relative;
   display: block;
-  width: 200px;
+  width: 250px;
   font-size: 18px;
   color: #fff;
+  margin-left: 928px;
+  margin-top: 20px;
 }
 
 .select-box__current {
@@ -110,4 +115,75 @@
     -webkit-transform: scaleY(0);
     transform: scaleY(0);
   }
+}
+
+.select-box__list {
+  position: absolute;
+  width: 100%;
+  max-height: 300px; /* Adjust based on your needs */
+  overflow-y: auto; /* Enables vertical scrolling */
+  padding: 0;
+  list-style: none;
+  opacity: 0;
+  -webkit-animation-name: HideList;
+  animation-name: HideList;
+  -webkit-animation-duration: 0.5s;
+  animation-duration: 0.5s;
+  -webkit-animation-delay: 0.5s;
+  animation-delay: 0.5s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-timing-function: step-start;
+  animation-timing-function: step-start;
+  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
+  z-index: 10; /* Ensures the dropdown is above other content */
+}
+
+.convert_btn {
+  padding: 10px;
+  border: 1px solid white;
+  border-radius: 50%;
+  background-color: inherit;
+}
+
+.right-container {
+  position: relative;
+}
+
+.audio_btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin-bottom: 5px;
+  margin-right: 5px;
+  padding: 5px;
+}
+.convert_btn:disabled {
+  cursor: not-allowed;
+}
+
+.converted_text {
+  overflow-x: hidden;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ff4533 #000222;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 24px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #000222;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #ff4533;
+  border-radius: 15px;
+  border: 3px none #ffffff;
 }
