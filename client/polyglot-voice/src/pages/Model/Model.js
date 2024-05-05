@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "./Model.css";
 import Navbar from "../../components/Navbar/Navbar";
 import axios from "axios";
+import { toast, ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Model() {
   const [input, setInput] = useState("");
@@ -26,6 +28,7 @@ export default function Model() {
       setDetectedLanguage(response.data.detected_language);
     } catch (err) {
       console.log(err);
+      notifyErr("Please check your internet connection.");
     } finally {
       setLoading(false); // Set loading to false after receiving response
     }
@@ -48,11 +51,25 @@ export default function Model() {
       setDetectedLanguage(convertToAudioResponse.data.detected_language); // Set detected language
     } catch (err) {
       console.log(err);
+      notifyErr("Please check your internet connection.");
     } finally {
       setLoading(false); // Set loading to false after receiving response
     }
   };
 
+  const notifyErr = (msg) => {
+    toast.error(msg, {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+      transition: Bounce,
+    });
+  };
   return (
     <>
       <Navbar />
@@ -105,6 +122,19 @@ export default function Model() {
             </div>
           )}
         </div>
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          transition={Bounce}
+        />
       </div>
     </>
   );

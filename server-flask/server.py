@@ -5,7 +5,7 @@ import cloudinary.uploader
 import cloudinary.api
 import model
 import datetime
-from translate import Translator
+from googletrans import Translator
 
 app = Flask(__name__)
 CORS(app)
@@ -97,34 +97,54 @@ def convert_and_upload_audio():
     
     return jsonify({'detected_language': detected_language, 'audio_url': audio_url})
 
-# @app.route('/translate', methods=['POST'])
-# def translate_and_get_audio():
-#     text = request.json['text']
-#     target_language = request.json['target_language']
+@app.route('/translate', methods=['POST'])
+def translate_and_get_audio():
+    text = request.json['text']
+    target_language = request.json['target_language']
     
-#     # Detect language
-#     detected_language = trained_model.detect_language(text)
+    # Detect language
+    detected_language = trained_model.detect_language(text)
     
-#     # Get the language code corresponding to the detected language
-#     lang_code_from = language_mapping.get(detected_language)
-#     lang_code_to = language_mapping.get(target_language)
+    # Get the language code corresponding to the detected language
+    lang_code_from = language_mapping.get(detected_language)
+    lang_code_to = language_mapping.get(target_language)
 
-#     # Check if the languages are supported
-#     if lang_code_from is None or lang_code_to is None:
-#         return jsonify({'error': 'Language not supported'}), 400
+    # Check if the languages are supported
+    if lang_code_from is None or lang_code_to is None:
+        return jsonify({'error': 'Language not supported'}), 400
     
-#     # Attempt translation with error handling
-#     try:
-#         translations = {}
-#         translator = Translator(provider='libre', from_lang=lang_code_from, to_lang=lang_code_to)
-#         translation = translator.translate(text)
-#         translations[lang_code_to] = translation
-        
-#         return jsonify({'detected_language': detected_language, 'translations': translations})
-#     except Exception as e:
-#         # Log the error for debugging purposes
-#         app.logger.error(f"Translation error: {e}")
-#         return jsonify({'error': 'Translation failed'}), 500
+    # Translate text
+    translated_text = translate(text, lang_code_to)
+    
+    # Convert translated text to speech
+    tts = gTTS(text=translated_text, lang=lang_code_to, slow=False)
+    tts.save('translated_output.wav')
+    
+    # Upload translated audio to Cloudinary
+    translated_audio_upload_response = cloudinary.uploader.upload('translated_output.wav', resource_type='video')
+    translated_audio_url = translated_audio_upload_response['secure_url']
+
+    # Set expiry time to 12 hours
+    cloudinary.api.update(
+        public_id=translated_audio_upload_response['public_id'],
+        type='upload',
+        resource_type='video',
+        expiration=datetime.datetime.now() + datetime.timedelta(hours=12)
+    )
+    
+    return jsonify({
+        'detected_language': detected_language, 
+        'translated_text': translated_text,
+        'translated_audio_url': translated_audio_url
+    })
+
+def translate(text, target_language):
+    translator = Translator()
+    translation = translator.translate(text, dest=target_language)
+    translated_text = translation.text
+    print(translated_text)
+    return translated_text
+
 
 if __name__ == "__main__":
     app.run(debug=True)
